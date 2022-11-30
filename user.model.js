@@ -3,7 +3,7 @@ const conection = require("./db.config.js");
 
 const userSchema = new mongoose.Schema({
 	nombre: {
-		type: [String]
+		type: String
 	},
 	apellido: {
 		type: String

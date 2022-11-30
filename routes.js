@@ -3,7 +3,7 @@ module.exports = app => {
 	
 	// ALL Get
   app.get("/getAll", async(req, res)=>{
-	  const users = await User.find({});
+	  const users = await User.find({esInvitado:true}, '-_id -password -esInvitado -__v');
 	  //const users = await Evaluado.find({idt:idt});
 	  //const vsession = req.session;
 	  //res.render('evaluado/all',{ idt, evaluados, vsession })
