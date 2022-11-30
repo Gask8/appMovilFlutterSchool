@@ -6,25 +6,28 @@ const userSchema = new mongoose.Schema({
 		type: [String]
 	},
 	apellido: {
-		type: [String]
+		type: String
 	},
 	edad: {
-		type: [Number]
+		type: Number
 	},
 	sexo: {
-		type: [Boolean]
+		type: Boolean
 	},
 	url_foto: {
-		type: [String]
+		type: String
 	},
 	correo: {
-		type: [String]
+		type: String
 	},
 	password: {
-		type: [String]
+		type: String
+	},
+	telefono: {
+		type: String
 	},
 	esInvitado: {
-		type: [Boolean]
+		type: Boolean
 	}
 });
 

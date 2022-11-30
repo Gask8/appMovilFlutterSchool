@@ -15,7 +15,6 @@ module.exports = app => {
   app.post("/addOne", async(req, res)=>{
 	  const data = req.body;
 	  console.log(data);
-	  console.log(req.body.nombre);
 	  await User.create(data, function(err, result){
 		  if(err){
 			  res.send(err);
