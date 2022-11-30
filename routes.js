@@ -1,13 +1,8 @@
 module.exports = app => {
 	const User = require("./user.model.js");
-	const express = require('express');
-	const router = express.Router();
-	const bodyParser = require('body-parser');
-	var jsonParser = bodyParser.json()
-	app.use('/', router);
 	
 	// ALL Get
-  router.get("/getAll", async(req, res)=>{
+  app.get("/getAll", async(req, res)=>{
 	  const users = await User.find({});
 	  //const users = await Evaluado.find({idt:idt});
 	  //const vsession = req.session;
@@ -17,7 +12,7 @@ module.exports = app => {
 	
 	
 	// New Post
-  router.post("/addOne", async(req, res)=>{
+  app.post("/addOne", async(req, res)=>{
 	  const data = req.body;
 	  console.log(data);
 	  console.log(req.body.nombre);
@@ -28,11 +23,4 @@ module.exports = app => {
 	  res.send(data);
   });
 	
-	// router.post("/prueba", async(req, res)=>{
-	//   const data = req.body;
-	//   console.log(data);
-	//   console.log(req.body);
-	//   console.log(req.body.nombre);
-	//   res.send(data);
-	// });
 };

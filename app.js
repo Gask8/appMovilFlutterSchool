@@ -8,6 +8,7 @@ const sessions = require('express-session');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // session
 const store = MongoStore.create({
@@ -28,22 +29,17 @@ const sessionConfig = {
 	}
 }
 //Especificaciones
-app.use(express.static('public'))
-app.set('view engine','ejs');
-app.set('views',path.join(__dirname,'/views'))
+app.use(express.static("public"));
 app.use(methodOverride('_method'));
-//app.use(express.urlencoded({ extended: true }));
-//app.use(express.json());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());
+app.use(cors())
 app.use(sessions(sessionConfig));
 
 // Paths
 //app.get('/',(req,res)=>{var vsession = req.session;res.render('index', { vsession })})
 app.get('/',(req,res)=>{res.send("Proyecto Final")})
-app.post("/prueba", async(req, res)=>{res.send(req.body);});
-app.get("/prueba2", async(req, res)=>{res.send(req.body);});
 //add the router
 app.use('/', router);
 require("./routes.js")(app);
