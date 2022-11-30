@@ -1,19 +1,61 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+import 'user.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tcard/tcard.dart';
 import 'package:flutter/gestures.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_sms/flutter_sms.dart';
+import 'package:tcard/tcard.dart';
+
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final Future<List<User>> products;
+  const Home({Key? key, required this.products}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
+
 }
 
 class _HomeState extends State<Home> {
+
+  void _openwhatsapp(String message, String destinatario) async {
+    var whatsapp = destinatario;
+    var whatsappURl_android =
+        "whatsapp://send?phone=" + whatsapp + "&text=" + message;
+    var whatappURL_ios = "https://wa.me/$whatsapp?text=${Uri.parse(message)}";
+    if (Platform.isIOS) {
+      // for iOS phone only
+      if (await canLaunch(whatappURL_ios)) {
+        await launch(whatappURL_ios, forceSafariVC: false);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: new Text("whatsapp no instalado")));
+      }
+    } else {
+      // android , web
+      if (await canLaunch(whatsappURl_android)) {
+        await launch(whatsappURl_android);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: new Text("whatsapp no installed")));
+      }
+    }
+  }
+  void _enviarSMS(String message, List<String> recipents) async {
+    String _resultado = await sendSMS(message: message, recipients: recipents)
+        .catchError((onError) {
+      print(onError);
+    });
+    print(_resultado);
+  }
+
   List img = [
     'https://media.istockphoto.com/photos/self-management-is-a-freelancers-greatest-tool-picture-id1294442411?b=1&k=20&m=1294442411&s=170667a&w=0&h=DzebibUiw8fb056LdMdG5oKURp9LJHfohv_nSG1d764=',
+    'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
     'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
     'https://images.pexels.com/photos/1777689/pexels-photo-1777689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
     'https://images.pexels.com/photos/1678829/pexels-photo-1678829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
@@ -95,7 +137,7 @@ class _HomeState extends State<Home> {
                     });
                   },
                 ),
-                label: "Chat",
+                label: "Home",
               ),
               BottomNavigationBarItem(
                 icon: IconButton(
@@ -114,7 +156,7 @@ class _HomeState extends State<Home> {
                     });
                   },
                 ),
-                label: "Home",
+                label: "List",
               ),
               BottomNavigationBarItem(
                 icon: IconButton(
@@ -132,7 +174,7 @@ class _HomeState extends State<Home> {
                 label: "Account",
               ),
             ]),
-        floatingActionButton: _selectedIndex == 3
+        floatingActionButton: _selectedIndex == 4
             ? FloatingActionButton(
           backgroundColor: Colors.white,
           child: const Icon(
@@ -260,10 +302,9 @@ class _HomeState extends State<Home> {
                                                         });
                                                         // await Future.delayed(const Duration(seconds: 1));
                                                         try {
-                                                          _tcard.forward(
-                                                              direction:
-                                                              SwipDirection
-                                                                  .Right);
+                                                          String mensaje = "Esto es un mensaje";
+                                                          List<String> destinatarios = ["+525591555190"];
+                                                          _enviarSMS(mensaje, destinatarios);
                                                         } catch (e) {
                                                           print(
                                                               "EROR $e ======");
@@ -289,10 +330,9 @@ class _HomeState extends State<Home> {
                                                         });
                                                         // await Future.delayed(const Duration(seconds: 1));
                                                         try {
-                                                          _tcard.forward(
-                                                              direction:
-                                                              SwipDirection
-                                                                  .Right);
+                                                          String mensaje = "Esto es un mensaje";
+                                                          String destinatario = "+525591555190";
+                                                          _openwhatsapp(mensaje, destinatario);
                                                         } catch (e) {
                                                           print(
                                                               "EROR $e ======");
