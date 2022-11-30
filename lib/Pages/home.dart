@@ -53,6 +53,7 @@ class _HomeState extends State<Home> {
     print(_resultado);
   }
 
+  
   List img = [
     'https://media.istockphoto.com/photos/self-management-is-a-freelancers-greatest-tool-picture-id1294442411?b=1&k=20&m=1294442411&s=170667a&w=0&h=DzebibUiw8fb056LdMdG5oKURp9LJHfohv_nSG1d764=',
     'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
@@ -173,7 +174,38 @@ class _HomeState extends State<Home> {
                 ),
                 label: "Account",
               ),
+              BottomNavigationBarItem(
+                icon: IconButton(
+                  icon: const Icon(
+                    Icons.account_circle,
+                    color: Colors.pink,
+                    size: 27,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _selectedIndex = 3;
+                    });
+                  },
+                ),
+                label: "Account",
+              ),
+              BottomNavigationBarItem(
+                icon: IconButton(
+                  icon: const Icon(
+                    Icons.account_circle,
+                    color: Colors.pink,
+                    size: 27,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _selectedIndex = 2;
+                    });
+                  },
+                ),
+                label: "Account",
+              ),
             ]),
+
         floatingActionButton: _selectedIndex == 4
             ? FloatingActionButton(
           backgroundColor: Colors.white,
