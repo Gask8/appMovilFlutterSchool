@@ -1,42 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
+import 'user.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<Album> createAlbum(String title) async {
+Future<User> createUser(String nombre) async {
   final response = await http.post(
-    Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'title': title,
-    }),
-  );
+  Uri.parse('https://proyectofinalpdm.run-us-west2.goorm.io/addOne'),
+  headers: <String, String>{
+    'Content-Type': 'application/json; charset=UTF-8',
+  },
+  body: jsonEncode(<String, String>{
+    'nombre': nombre,
+  }),
+);
 
   if (response.statusCode == 201) {
     // If the server did return a 201 CREATED response,
     // then parse the JSON.
-    return Album.fromJson(jsonDecode(response.body));
+    return User.fromJson(jsonDecode(response.body));
   } else {
     // If the server did not return a 201 CREATED response,
     // then throw an exception.
-    throw Exception('Failed to create album.');
-  }
-}
-
-class Album {
-  final int id;
-  final String title;
-
-  const Album({required this.id, required this.title});
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-      id: json['id'],
-      title: json['title'],
-    );
+    throw Exception('Failed to create User.');
   }
 }
 
@@ -55,7 +42,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final TextEditingController _controller = TextEditingController();
-  Future<Album>? _futureAlbum;
+  Future<User>? _futureUserP;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         body: Container(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(8.0),
-          child: (_futureAlbum == null) ? buildColumn() : buildFutureBuilder(),
+          child: (_futureUserP == null) ? buildColumn() : buildFutureBuilder(),
         ),
       ),
     );
@@ -88,7 +75,7 @@ class _MyAppState extends State<MyApp> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              _futureAlbum = createAlbum(_controller.text);
+              _futureUserP = createUser(_controller.text);
             });
           },
           child: const Text('Create Data'),
@@ -97,12 +84,12 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  FutureBuilder<Album> buildFutureBuilder() {
-    return FutureBuilder<Album>(
-      future: _futureAlbum,
+  FutureBuilder<User> buildFutureBuilder() {
+    return FutureBuilder<User>(
+      future: _futureUserP,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Text(snapshot.data!.title);
+          return Text(snapshot.data!.nombre!);
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }

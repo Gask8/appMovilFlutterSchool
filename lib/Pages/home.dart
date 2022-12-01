@@ -2,6 +2,7 @@ import 'dart:io';
 import 'user.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'user.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,6 +30,33 @@ List<User> decodeUser(String responseBody) {
   return parsed.map<User>((json) => User.fromMap(json)).toList();
 }
 
+Future<User> createUser(String nombre, String apellido, String edad, String sexo, String url_foto, String correo, String telefono) async {
+  final response = await http.post(
+    Uri.parse('https://proyectofinalpdm.run-us-west2.goorm.io/addOne'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'nombre': nombre,
+      'apellido': apellido,
+      'edad': edad,
+      'sexo': sexo,
+      'url_foto': url_foto,
+      'correo': correo,
+      'telefono': telefono,
+    }),
+  );
+  if (response.statusCode == 201) {
+    // If the server did return a 201 CREATED response,
+    // then parse the JSON.
+    return User.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response,
+    // then throw an exception.
+    throw Exception('Failed to create User.');
+  }
+}
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
   @override
@@ -39,7 +67,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   final Future<List<User>> _futureUser = fetchUsers();
-
   List img = [
     'https://media.istockphoto.com/photos/self-management-is-a-freelancers-greatest-tool-picture-id1294442411?b=1&k=20&m=1294442411&s=170667a&w=0&h=DzebibUiw8fb056LdMdG5oKURp9LJHfohv_nSG1d764=',
     'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
@@ -61,7 +88,6 @@ class _HomeState extends State<Home> {
     'Alfonso - 26',
     'Alfonso - 26',
   ];
-
   void convert() async {
     List list = await _futureUser;
     img=[];
@@ -106,6 +132,13 @@ class _HomeState extends State<Home> {
     print(_resultado);
   }
 
+  final Uri _url = Uri.parse('https://proyectofinalpdm.run-us-west2.goorm.io/');
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
+  }
+
   late TCardController _tcard = TCardController();
   var directionSwip, showInswer;
   var value;
@@ -136,11 +169,11 @@ class _HomeState extends State<Home> {
               child: AppBar(
                 title: Row(
                   children: [
-                    const Icon(Icons.search, color: Colors.pink),
+                    const Icon(Icons.search, color: Colors.redAccent),
                     Container(
                         margin: const EdgeInsets.only(left: 10),
                         child: const Text(
-                          "Search 0 Matches",
+                          "Busqueda de Plus One",
                           style: TextStyle(color: Colors.black54),
                         )),
                   ],
@@ -223,7 +256,7 @@ class _HomeState extends State<Home> {
               BottomNavigationBarItem(
                 icon: IconButton(
                   icon: const Icon(
-                    Icons.account_circle,
+                    Icons.grid_view,
                     color: Colors.redAccent,
                     size: 27,
                   ),
@@ -233,12 +266,12 @@ class _HomeState extends State<Home> {
                     });
                   },
                 ),
-                label: "Account",
+                label: "Otro",
               ),
               BottomNavigationBarItem(
                 icon: IconButton(
                   icon: const Icon(
-                    Icons.account_circle,
+                    Icons.plus_one,
                     color: Colors.redAccent,
                     size: 27,
                   ),
@@ -248,22 +281,9 @@ class _HomeState extends State<Home> {
                     });
                   },
                 ),
-                label: "Account",
+                label: "Unirse",
               ),
             ]),
-
-        floatingActionButton: _selectedIndex == 4
-            ? FloatingActionButton(
-          backgroundColor: Colors.white,
-          child: const Icon(
-            Icons.shield,
-            color: Colors.blue,
-          ),
-          onPressed: () {
-            convert();
-          },
-        )
-            : null,
         body: _selectedIndex == 0
             ? Center(
           child: RefreshIndicator(
@@ -837,32 +857,22 @@ class _HomeState extends State<Home> {
             ? SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(30),
-                child: const Text(
-                  "Upgrade To Gold To See People Who have already liked you.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
               Container(
                 decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
-                        "assets/icon/recently.png",
+                        "assets/icon/goldlogo.png",
                       ),
                       fit: BoxFit.fill,
                     ),
                     borderRadius:
                     BorderRadius.all(Radius.circular(12)),
                     color: Color(0xfff8019a)),
-                width: 200,
-                height: 300,
+                width: 100,
+                height: 100,
                 margin: const EdgeInsets.all(15),
                 child: null,
               ),
@@ -881,11 +891,11 @@ class _HomeState extends State<Home> {
                       Colors.amber.shade800, // background
                       onPrimary: Colors.amber, // foreground
                     ),
-                    onPressed: () {},
+                    onPressed: () {_launchUrl();},
                     child: const Text(
-                      'SEE WHO Likes YOU',
+                      'UNETE CON NOSOTROS LOG IN',
                       style: TextStyle(
-                        fontSize: 26,
+                        fontSize: 20,
                         color: Color(0xFFFFFFFF),
                       ),
                     ),
@@ -918,7 +928,7 @@ class _HomeState extends State<Home> {
               Container(
                   margin: const EdgeInsets.only(left: 18),
                   child: const Text(
-                    "New Matches",
+                    "Matches",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25,
@@ -958,7 +968,7 @@ class _HomeState extends State<Home> {
                         decoration: const BoxDecoration(
                             image: DecorationImage(
                               image: AssetImage(
-                                "assets/icon/covid.png",
+                                "assets/icon/gamers.jpeg",
                               ),
                               fit: BoxFit.fill,
                             ),
@@ -971,7 +981,7 @@ class _HomeState extends State<Home> {
                         child: null,
                       ),
                       const Text(
-                        "Vaccine",
+                        "Eventos",
                         style: TextStyle(
                           fontSize: 18,
                         ),
@@ -983,7 +993,7 @@ class _HomeState extends State<Home> {
               Container(
                   margin: const EdgeInsets.only(left: 18),
                   child: const Text(
-                    "Messages ❶",
+                    "Mensajes ❶",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 25,
@@ -992,26 +1002,6 @@ class _HomeState extends State<Home> {
               const SizedBox(
                 height: 20,
               ),
-              ListTile(
-                leading: Image.asset("assets/icon/logo.png"),
-                title: Row(
-                  children: const [
-                    Text(
-                      "Team Tinder ",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                    ),
-                    Icon(
-                      Icons.verified,
-                      color: Colors.pink,
-                    )
-                  ],
-                ),
-                subtitle: const Text(
-                    "Thank you for being a  Tinder mem..."),
-              )
             ],
           ),
         )
@@ -1041,7 +1031,7 @@ class _HomeState extends State<Home> {
                     MainAxisAlignment.center,
                     children: [
                       Container(
-                        child: const Text("Winter ,19",
+                        child: const Text("Nicole Salandra, 21",
                             style: TextStyle(
                                 fontSize: 22,
                                 fontWeight:
@@ -1077,7 +1067,7 @@ class _HomeState extends State<Home> {
                         const SizedBox(
                           height: 10,
                         ),
-                        const Text("SETTINGS"),
+                        const Text("Configuracion"),
                       ],
                     ),
                     Column(
@@ -1086,7 +1076,7 @@ class _HomeState extends State<Home> {
                           height: 40,
                         ),
                         CircleAvatar(
-                          backgroundColor: Colors.pink,
+                          backgroundColor: Colors.redAccent,
                           radius: 35,
                           child: IconButton(
                               onPressed: () {},
@@ -1099,7 +1089,7 @@ class _HomeState extends State<Home> {
                         const SizedBox(
                           height: 10,
                         ),
-                        const Text("ADD MEDIA"),
+                        const Text("Media"),
                       ],
                     ),
                     Column(
@@ -1117,7 +1107,7 @@ class _HomeState extends State<Home> {
                         const SizedBox(
                           height: 10,
                         ),
-                        const Text("SAFETY"),
+                        const Text("Seguridad"),
                       ],
                     ),
                   ],
@@ -1125,7 +1115,7 @@ class _HomeState extends State<Home> {
                 const SizedBox(height: 20),
                 Container(
                     width: double.infinity,
-                    height: 250,
+                    height: 200,
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(120),
@@ -1147,48 +1137,15 @@ class _HomeState extends State<Home> {
                           width: double.infinity,
                           child: ListTile(
                             title: const Text(
-                                "Get Tinder Gold™"),
+                                "Se UNO MAS!"),
                             leading: Image.asset(
-                              "assets/icon/goldlogo.png",
+                              "assets/icon/goldtinder.png",
                               width: 40,
                             ),
                           ),
                         ),
                         const Text(
-                            "See Who Like You & more !"),
-                        Container(
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.only(
-                                top: 70),
-                            child: ElevatedButton(
-                              style: ElevatedButton
-                                  .styleFrom(
-                                padding: const EdgeInsets
-                                    .symmetric(
-                                    horizontal: 30,
-                                    vertical: 10),
-                                shape:
-                                RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(40.0),
-                                ),
-                                primary: Colors
-                                    .white, // background
-                                onPrimary: Colors
-                                    .white, // foreground
-                              ),
-                              onPressed: () {},
-                              child: const Text(
-                                'Get Tinder Gold™',
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  color:
-                                  Color(0xFFFFAE00),
-                                ),
-                              ),
-                            )),
+                            "Informacion de tu usario"),
                       ],
                     ))
               ],
@@ -1197,4 +1154,5 @@ class _HomeState extends State<Home> {
         )
             : null);
   }
+
 }
