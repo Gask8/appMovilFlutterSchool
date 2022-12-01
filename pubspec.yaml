@@ -76,6 +76,10 @@ flutter:
     - assets/icon/recently.png
     - assets/icon/searchTinder.jpg
     - assets/icon/splash.png
+    - assets/icon/amistad.jpeg
+    - assets/icon/amigos.jpg
+    - assets/icon/unsplash.jpg
+    - assets/icon/happy-relationship.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'user.dart';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,16 +12,68 @@ import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:tcard/tcard.dart';
+import 'package:http/http.dart' as http;
+
+Future<List<User>> fetchUsers() async {
+  final response = await http.get(Uri.parse('https://proyectofinalpdm.run-us-west2.goorm.io/getAll'));
+  if (response.statusCode == 200) {
+    return decodeUser(response.body);
+  } else {
+    throw Exception('Unable to fetch data from the REST API');
+  }
+}
+
+List<User> decodeUser(String responseBody) {
+  final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+  print(parsed);
+  return parsed.map<User>((json) => User.fromMap(json)).toList();
+}
 
 class Home extends StatefulWidget {
-  final Future<List<User>> products;
-  const Home({Key? key, required this.products}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 
 }
 
 class _HomeState extends State<Home> {
+
+  final Future<List<User>> _futureUser = fetchUsers();
+
+  List img = [
+    'https://media.istockphoto.com/photos/self-management-is-a-freelancers-greatest-tool-picture-id1294442411?b=1&k=20&m=1294442411&s=170667a&w=0&h=DzebibUiw8fb056LdMdG5oKURp9LJHfohv_nSG1d764=',
+    'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+    'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+    'https://images.pexels.com/photos/1777689/pexels-photo-1777689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+    'https://images.pexels.com/photos/1678829/pexels-photo-1678829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+  ];
+  List cellphones = [
+    '+525540270556',
+    '+525540270556',
+    '+525540270556',
+    '+525540270556',
+    '+525540270556',
+  ];
+  List texts = [
+    'Alfonso - 26',
+    'Alfonso - 26',
+    'Alfonso - 26',
+    'Alfonso - 26',
+    'Alfonso - 26',
+  ];
+
+  void convert() async {
+    List list = await _futureUser;
+    img=[];
+    cellphones=[];
+    texts = [];
+    for (var item in list) {
+      img.add(item.url_foto);
+      cellphones.add(item.telefono);
+      texts.add(item.nombre+" "+item.apellido+" - "+item.edad.toString());
+      print(texts);
+    }
+  }
 
   void _openwhatsapp(String message, String destinatario) async {
     var whatsapp = destinatario;
@@ -53,14 +106,6 @@ class _HomeState extends State<Home> {
     print(_resultado);
   }
 
-  
-  List img = [
-    'https://media.istockphoto.com/photos/self-management-is-a-freelancers-greatest-tool-picture-id1294442411?b=1&k=20&m=1294442411&s=170667a&w=0&h=DzebibUiw8fb056LdMdG5oKURp9LJHfohv_nSG1d764=',
-    'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    'https://images.pexels.com/photos/2700587/pexels-photo-2700587.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    'https://images.pexels.com/photos/1777689/pexels-photo-1777689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    'https://images.pexels.com/photos/1678829/pexels-photo-1678829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  ];
   late TCardController _tcard = TCardController();
   var directionSwip, showInswer;
   var value;
@@ -129,7 +174,7 @@ class _HomeState extends State<Home> {
                 icon: IconButton(
                   icon: const Icon(
                     Icons.wysiwyg,
-                    color: Colors.pinkAccent,
+                    color: Colors.redAccent,
                     size: 27,
                   ),
                   onPressed: () {
@@ -150,6 +195,7 @@ class _HomeState extends State<Home> {
                     setState(() {
                       _selectedIndex = 0;
                       try {
+                        convert();
                         _tcard.reset();
                       } catch (e) {
                         print("EROR === $e");
@@ -163,7 +209,7 @@ class _HomeState extends State<Home> {
                 icon: IconButton(
                   icon: const Icon(
                     Icons.account_circle,
-                    color: Colors.pink,
+                    color: Colors.redAccent,
                     size: 27,
                   ),
                   onPressed: () {
@@ -178,7 +224,7 @@ class _HomeState extends State<Home> {
                 icon: IconButton(
                   icon: const Icon(
                     Icons.account_circle,
-                    color: Colors.pink,
+                    color: Colors.redAccent,
                     size: 27,
                   ),
                   onPressed: () {
@@ -193,7 +239,7 @@ class _HomeState extends State<Home> {
                 icon: IconButton(
                   icon: const Icon(
                     Icons.account_circle,
-                    color: Colors.pink,
+                    color: Colors.redAccent,
                     size: 27,
                   ),
                   onPressed: () {
@@ -213,7 +259,9 @@ class _HomeState extends State<Home> {
             Icons.shield,
             color: Colors.blue,
           ),
-          onPressed: () {},
+          onPressed: () {
+            convert();
+          },
         )
             : null,
         body: _selectedIndex == 0
@@ -284,6 +332,14 @@ class _HomeState extends State<Home> {
                                     child: Stack(
                                       children: [
                                         Container(
+                                          margin: const EdgeInsets.symmetric(vertical: 100),
+                                          alignment: Alignment.bottomCenter,
+                                            child: Text(
+                                                ' '+texts[index],
+                                              style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
+                                            ),
+                                        ),
+                                        Container(
                                           margin: const EdgeInsets.all(10),
                                           alignment: Alignment.bottomCenter,
                                           child: Row(
@@ -334,8 +390,8 @@ class _HomeState extends State<Home> {
                                                         });
                                                         // await Future.delayed(const Duration(seconds: 1));
                                                         try {
-                                                          String mensaje = "Esto es un mensaje";
-                                                          List<String> destinatarios = ["+525591555190"];
+                                                          String mensaje = "Hola Sexy";
+                                                          List<String> destinatarios = [cellphones[index]];
                                                           _enviarSMS(mensaje, destinatarios);
                                                         } catch (e) {
                                                           print(
@@ -362,8 +418,8 @@ class _HomeState extends State<Home> {
                                                         });
                                                         // await Future.delayed(const Duration(seconds: 1));
                                                         try {
-                                                          String mensaje = "Esto es un mensaje";
-                                                          String destinatario = "+525591555190";
+                                                          String mensaje = "Hola Sexy";
+                                                          String destinatario = cellphones[index];
                                                           _openwhatsapp(mensaje, destinatario);
                                                         } catch (e) {
                                                           print(
@@ -427,7 +483,7 @@ class _HomeState extends State<Home> {
                           decoration: const BoxDecoration(
                               borderRadius:
                               BorderRadius.all(Radius.circular(12)),
-                              color: Color(0xfff8019a)),
+                              color: Color(0xffda4835)),
                           width: double.infinity,
                           height: 250,
                           margin: const EdgeInsets.all(15),
@@ -442,18 +498,18 @@ class _HomeState extends State<Home> {
                                 margin: const EdgeInsets.only(
                                     bottom: 80, right: 150),
                                 child: const Text(
-                                  "Photo Verified",
+                                  "Plus One +",
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.black,
                                       fontSize: 32,
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
                               Container(
                                 margin: const EdgeInsets.only(
-                                    top: 140, right: 125),
+                                    top: 140, right: 125, left: 10),
                                 child: const Text(
-                                  "Get Verified On Tinder ",
+                                  "Nunca vuelvas a ir solo a una Fiesta",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
@@ -464,7 +520,7 @@ class _HomeState extends State<Home> {
                                 margin: const EdgeInsets.only(
                                     top: 190, right: 230),
                                 child: const Text(
-                                  "Photo Verified",
+                                  "",
                                   style: TextStyle(
                                     color: Color(0xFF858484),
                                     fontSize: 18,
@@ -486,7 +542,7 @@ class _HomeState extends State<Home> {
                                     ),
                                     onPressed: () {},
                                     child: const Text(
-                                      'TRY NOW',
+                                      'Pruebalo',
                                       style: TextStyle(
                                         color: Color(0xFF000000),
                                       ),
@@ -498,7 +554,7 @@ class _HomeState extends State<Home> {
                         Container(
                             margin: const EdgeInsets.only(left: 15),
                             child: const Text(
-                              "For you",
+                              "Para ti",
                               style: TextStyle(
                                   fontSize: 25, color: Colors.black),
                             )),
@@ -512,7 +568,7 @@ class _HomeState extends State<Home> {
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                        "assets/icon/gamers.jpeg",
+                                        "assets/icon/amigos.jpg",
                                       ),
                                       fit: BoxFit.cover,
                                     ),
@@ -538,7 +594,7 @@ class _HomeState extends State<Home> {
                                             ),
                                             onPressed: () {},
                                             child: const Text(
-                                              'Gamers',
+                                              'Amigos',
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
                                               ),
@@ -548,7 +604,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 220, left: 10),
                                         child: const Text(
-                                          "Find Your Perfect Match",
+                                          "Encuentra Nuevos Amigos",
                                           style: TextStyle(
                                             color: Color(0xFFFFFFFF),
                                             fontSize: 18,
@@ -559,7 +615,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 270, left: 10),
                                         child: const Text(
-                                          "Passions",
+                                          "",
                                           style: TextStyle(
                                             color: Color(0xFFA1A1A1),
                                             fontSize: 15,
@@ -577,7 +633,7 @@ class _HomeState extends State<Home> {
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                        "assets/icon/gamers.jpeg",
+                                        "assets/icon/happy-relationship.jpg",
                                       ),
                                       fit: BoxFit.cover,
                                     ),
@@ -603,7 +659,7 @@ class _HomeState extends State<Home> {
                                             ),
                                             onPressed: () {},
                                             child: const Text(
-                                              'Gamers',
+                                              'Aventura',
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
                                               ),
@@ -613,7 +669,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 220, left: 10),
                                         child: const Text(
-                                          "Find Your Perfect Match",
+                                          "Talvez algo mas",
                                           style: TextStyle(
                                             color: Color(0xFFFFFFFF),
                                             fontSize: 18,
@@ -624,7 +680,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 270, left: 10),
                                         child: const Text(
-                                          "Passions",
+                                          "",
                                           style: TextStyle(
                                             color: Color(0xFFA1A1A1),
                                             fontSize: 15,
@@ -649,7 +705,7 @@ class _HomeState extends State<Home> {
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                        "assets/icon/gamers.jpeg",
+                                        "assets/icon/amistad.jpeg",
                                       ),
                                       fit: BoxFit.cover,
                                     ),
@@ -675,7 +731,7 @@ class _HomeState extends State<Home> {
                                             ),
                                             onPressed: () {},
                                             child: const Text(
-                                              'Gamers',
+                                              'Compañia',
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
                                               ),
@@ -685,7 +741,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 220, left: 10),
                                         child: const Text(
-                                          "Find Your Perfect Match",
+                                          "Te sientes solo",
                                           style: TextStyle(
                                             color: Color(0xFFFFFFFF),
                                             fontSize: 18,
@@ -696,7 +752,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 270, left: 10),
                                         child: const Text(
-                                          "Passions",
+                                          "",
                                           style: TextStyle(
                                             color: Color(0xFFA1A1A1),
                                             fontSize: 15,
@@ -714,7 +770,7 @@ class _HomeState extends State<Home> {
                                   decoration: const BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(
-                                        "assets/icon/gamers.jpeg",
+                                        "assets/icon/unsplash.jpg",
                                       ),
                                       fit: BoxFit.cover,
                                     ),
@@ -740,7 +796,7 @@ class _HomeState extends State<Home> {
                                             ),
                                             onPressed: () {},
                                             child: const Text(
-                                              'Gamers',
+                                              'Unete',
                                               style: TextStyle(
                                                 color: Color(0xFF000000),
                                               ),
@@ -750,7 +806,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 220, left: 10),
                                         child: const Text(
-                                          "Find Your Perfect Match",
+                                          "Y se uno mas con suerte",
                                           style: TextStyle(
                                             color: Color(0xFFFFFFFF),
                                             fontSize: 18,
@@ -761,7 +817,7 @@ class _HomeState extends State<Home> {
                                         margin: const EdgeInsets.only(
                                             top: 270, left: 10),
                                         child: const Text(
-                                          "Passions",
+                                          "",
                                           style: TextStyle(
                                             color: Color(0xFFA1A1A1),
                                             fontSize: 15,
