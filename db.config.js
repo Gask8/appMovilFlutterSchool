@@ -1,5 +1,5 @@
 const LINK = "mongodb://localhost:27017/tinder";
-const LINKM = "mongodb+srv://gadmin:gz695VWqzWeSnSxr@cluster0.d74y6.mongodb.net/tinder?retryWrites=true&w=majority";
+const LINKM = "mongodb+srv://user:password@cluster0.d74y6.mongodb.net/tinder?retryWrites=true&w=majority";
 const mongoose = require('mongoose');
 const connection = mongoose.connect(LINKM)
 	.then(()=>{
