@@ -1,16 +1,19 @@
-# proyectofinal
+# ProyectoFinal Desarollo Movil
 
-A new Flutter project.
+PlusOne+  Tinder-like Flutter project
 
-## Getting Started
+por Gabriel Alejandro Salandra Kuri
 
-This project is a starting point for a Flutter application.
+## Tecnologia:
 
-A few resources to get you started if this is your first Flutter project:
+App:
+- Flutter
+- Dart
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Server:
+- Glitch
+- Nodejs
+- Mongodb Atlas
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Información del Autor:
+[Linkedin](https://mx.linkedin.com/in/gabriel-salandra-kuri-04a52b203/es)
